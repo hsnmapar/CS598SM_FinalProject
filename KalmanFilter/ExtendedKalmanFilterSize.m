@@ -1,47 +1,29 @@
 %ALEX DYTSO
 %KALMAN FITLER PROJECT
 %estimating trajectory of an object in 3-D
-function ExtendedKalmanFilterSize(val)
+function Xh = ExtendedKalmanFilterSize(val)
 
-Q=[0 0 0 0 0 0;
-   0 0 0 0 0 0;
-   0 0 0 0 0 0;
-   0 0 0 0.01 0 0;
-   0 0 0 0 0.01 0;
-   0 0 0 0 0 0.01];% Covarience matrix of process noise 
+Q=[ zeros(3,6);
+    zeros(3),1*eye(3)];% Covarience matrix of process noise 
 
 
-M=[0.001 0 0;
-    0 0.001 0;
-    0 0 0.001]; % Covarience matrix of measurment noise 
+M=.1*eye(3); % Covarience matrix of measurment noise 
 
 
 d=.1;% sampling time 
 
-A=[1 0 0 d 0 0;
-   0 1 0 0 d 0;
-   0 0 1 0 0 d;
-   0 0 0 1 0 0;
-   0 0 0 0 1 0;
-   0 0 0 0 0 1]; % System Dynamics 
+A = [eye(3),d*eye(3);
+    zeros(3),eye(3)]; % System Dynamics
 
 start_idx = find(~any(isnan(val),2),1);
 last_idx = find(~any(isnan(val),2),1,'last');
 Z(:,start_idx)=val(start_idx,:);% initial observation 
 
-X(:,start_idx) = [Z(:,1);0;0;0]; % "Actual" initial conditions
+X(:,start_idx) = [Z(:,start_idx);0;0;0]; % "Actual" initial conditions
 
-Xh(:,start_idx)=[Z(:,1);0;0;0];%Assumed initial conditions
+Xh(:,start_idx)=[Z(:,start_idx);0;0;0];%Assumed initial conditions
 
-P(:,:,start_idx)=[0.1 0 0 0 0 0;
-          0 0.1 0 0 0 0;
-          0 0 0.1 0 0 0;
-          0 0 0 0.1 0 0;
-          0 0 0 0 0.1 0;
-          0 0 0 0 0 0.1]; %inital value of covarience of estimation error
-  
-%
-   
+P(:,:,start_idx)= .1*eye(6);%inital value of covarience of estimation error   
 
 
 % Setting up plots 
@@ -82,7 +64,7 @@ for n=start_idx:last_idx
     
     %%% Genetatubg a process and observations
     Z(:,n+1) = nextVal(val,n);
-    X(:,n+1) = [Z(:,n+1);0;0;0];
+    X(1:size(Z,1),n+1) = Z(:,n+1);
     %[X(:,n+1),Z(:,n+1),w,u]=proccesANDobserve(A,X(:,n),Z(:,n),Q,M);
     
     subplot(3,3,1)
