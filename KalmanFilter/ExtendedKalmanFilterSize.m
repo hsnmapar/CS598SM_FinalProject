@@ -192,23 +192,4 @@ end
 function [v] = nextVal(vals, i)
     v = vals(i+1,:);
 end
-
-%THIS SUBROTINE GENERATES STATE PROCESS AND OBSERVATION PROCESS WITH
-%GAUSSINA NOISE
-function   [D,Z,W,U]=proccesANDobserve(A,D,Z,Q,M)
-
-
-W=[0;0;0;sqrt(Q(4,4))*randn(1);sqrt(Q(5,5))*randn(1);sqrt(Q(6,6))*randn(1)]; % generating process noise
-U=[sqrt(M(1,1))*randn(1);sqrt(M(1,1))*randn(1);sqrt(M(1,1))*randn(1)]; %generating observation noise
-
-D=A*D+W; % State process
-
-
-%ARG=arctang(D(2),D(1),ind);% ARGUMENT 
-
-Z = D(1:3)+U;
-% Z=[sqrt(D(1)^2+D(2)^2);ARG;D(3)]+U; % observation 
-
-
-end
 end
