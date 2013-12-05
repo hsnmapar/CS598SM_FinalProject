@@ -27,7 +27,6 @@ Xh(:,start_idx)=[Z(:,start_idx);0;0;0];%Assumed initial conditions
 
 P(:,:,start_idx)= .1*eye(6);%inital value of covarience of estimation error
 
-
 for n=start_idx:last_idx
     
     %%% Genetatubg a process and observations
@@ -51,7 +50,9 @@ for n=start_idx:last_idx
     P(:,:,n+1)=(eye(6)-K(:,:,n+1)*H(:,:,n+1))*P(:,:,n+1);% %computes covarience of estimation error
     
 end
-
+if(size(Xh,2) < size(val,1))
+    Xh(:,size(val,1)) = 0;
+end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
