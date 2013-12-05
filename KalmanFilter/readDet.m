@@ -33,23 +33,25 @@ classdef readDet < handle
             val = str2num(s);
         end
         
-        function [val, eof] = readCenterSizeLine(obj)
+        function [v, val, eof] = readCenterSizeLine(obj)
             [val, eof] = readline(obj);
             if(isempty(val))
-                val = [NaN,NaN,NaN];
+                val = NaN(1,11);
+                v = [NaN,NaN,NaN];
                 return;
             end
             v = val([2,3]);
             v(3) = sqrt(max((val(4)-val(8))^2+(val(5)-val(9))^2,(val(6)-val(10))^2+(val(7)-val(11))^2));
-            val = v;
         end
         
-        function [vals] = readAll(obj)
+        function [center_radius, tag_vals, def] = readAll(obj)
            eof = 0;
-           vals = [];
+           center_radius = [];
+           tag_vals = [];
            while ~eof
-                [val,eof] = obj.readCenterSizeLine();
-                vals(end+1,:) = val;
+                [v_cr, v_tag, eof] = obj.readCenterSizeLine();
+                tag_vals(end+1,:) = v_tag;
+                center_radius(end+1,:) = v_cr;
            end
         end
     end
