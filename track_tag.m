@@ -44,6 +44,55 @@ end
 keyboard;
 
 
+
+
+
+function[rad, relevant_pnts] = expand_circle(rad, cntr, xy)
+% expand radius until we have at least 4 relevant points
+num_pnts = size(xy,1);
+dists = repmat(cntr, [num_pnts, 1]) - xy;
+dists = sqrt(sum(dists.^2, 2));
+if length(find(dists <= rad)) >=4
+    relevant_pnts = dists <= rad;
+else
+    rad = rad+2;
+    [rad relevant_pnts] = expand_circle(rad, cntr, xy);
+end
+
+
+
+
+function[H] = compute_homography(xy_old, xy_new)
+% [x y; x y; x y; ...]
+num_pnts = size(xy_old,1);
+A = zeros(num_pnts.2, 8);
+for i = 1:num_pnts
+    A(2*i-1, 1:3) = [xy_old(i,:), 1];
+    A(2*i-1, 7:8) = -[xy_new(1).*xy_old];
+    A(2*i, 4:6) = [xy_old(i,:), 1];
+    A(2*i-1, 7:8) = -[xy_new(2).*xy_old];
+end
+B= xy_new';
+p = A\B(:);
+H = ones(3,3);
+H(1,:) = p(1:3);
+H(2,:) = p(4:6);
+H(3,1:2) = p(7:8);
+
+
+
+function[xy_new] = apply_homography(H, xy_old);
+num_pnts = size(xy_old,1);
+x = [xy_old'; ones(1, num_pnts)];
+
+tmp = H*x;
+tmp(1,:) = tmp(1,:)./tmp(3,:);
+tmp(2,:) = tmp(2,:)./tmp(3,:);
+tmp = tmp(1:2,:);
+xy_new = tmp';
+
+
+
 function[im] = load_current_image(detection_dir, fname)
 im = imread(fullfile(detection_dir,[fname,'.pnm']));
 
