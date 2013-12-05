@@ -3,7 +3,7 @@ function[] = track_tag(detection_dir)
 load(fullfile(detection_dir, 'kalman_data.mat'));
 
 N=300;
-
+k_all = val_kalman.all;
 %% load detection info
 cached_dets = load_tag_dets(detection_dir);
 
@@ -19,20 +19,27 @@ end
 
 [x,y, val] = klt_read_featuretable(fullfile(detection_dir, sprintf('Out_B5_N%d_R', N), 'features.txt'));
 % assume first image has detection
-for i = 1:length(cached_dets)
+for i = 1:length(cached_dets)-1
     im = load_current_image(detection_dir, cached_dets{i}.name);
     imshow(im);
     hold on;
-    [rad, relevant_pnts] = expand_circle(val_kalman.all(i,3), val_kalman.all(i,1:2), [x(:,i), y(:,i)]);
+    [rad, relevant_pnts] = expand_circle(k_all(i,3), k_all(i,1:2), [x(:,i), y(:,i)], val(:,i+1));
+    plot_circle(round(k_all(i,1)), round(k_all(i,2)), round(k_all(i,3)));
+
     if i == 1 % first frame, just draw the 
         det = cached_dets{i}.det;
-        hull = round([det(4:5); det(6:7); det(8:9); det(10:11)]);
-        plot(hull(:,1), hull(:,2))
-        keyboard;
-    else
+        cached_dets{i}.hull = round([det(4:5); det(6:7); det(8:9); det(10:11)]);        
+    else % compute homography from last frame
+        xy_old = [x(relevant_pnts, i-1), y(relevant_pnts, i-1)];
+        xy_new = [x(relevant_pnts, i), y(relevant_pnts, i)];        
+        H = compute_homography(xy_old, xy_new);
+        prev_hull = cached_dets{i-1}.hull;
+        
+        cached_dets{i}.hull = apply_homography(H, prev_hull);
     end
-    plot_circle(round(val_kalman.all(i,1)), round(val_kalman.all(i,2)), round(val_kalman.all(i,3)));
+    plot(cached_dets{i}.hull(:,1), cached_dets{i}.hull(:,2))
     drawnow;
+    keyboard;
     hold off;
 end
 
@@ -70,13 +77,16 @@ keyboard;
 
 
 
-function[rad, relevant_pnts] = expand_circle(rad, cntr, xy)
+function[rad, relevant_pnts] = expand_circle(rad, cntr, xy, vals_next)
 % expand radius until we have at least 4 relevant points
 num_pnts = size(xy,1);
 dists = repmat(cntr, [num_pnts, 1]) - xy;
 dists = sqrt(sum(dists.^2, 2));
-if length(find(dists <= rad)) >=4
-    relevant_pnts = dists <= rad;
+relevant_pnts = dists <= rad;
+relevant_pnts = relevant_pnts & (vals_next == 0);
+
+if length(find(relevant_pnts)) >=5 
+    return;
 else
     rad = rad+2;
     [rad relevant_pnts] = expand_circle(rad, cntr, xy);
@@ -91,9 +101,9 @@ num_pnts = size(xy_old,1);
 A = zeros(num_pnts*2, 8);
 for i = 1:num_pnts
     A(2*i-1, 1:3) = [xy_old(i,:), 1];
-    A(2*i-1, 7:8) = -[xy_new(1).*xy_old];
+    A(2*i-1, 7:8) = -[xy_new(i,1).*xy_old(i,:)];
     A(2*i, 4:6) = [xy_old(i,:), 1];
-    A(2*i-1, 7:8) = -[xy_new(2).*xy_old];
+    A(2*i, 7:8) = -[xy_new(i,2).*xy_old(i,:)];
 end
 B= xy_new';
 p = A\B(:);
