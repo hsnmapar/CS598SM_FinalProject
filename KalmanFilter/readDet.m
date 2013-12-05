@@ -10,7 +10,8 @@ classdef readDet < handle
     methods
         function obj = readDet(filename)
             s = fileread(filename);
-            obj.split_s = strsplit(s,'\n');
+            % obj.split_s = strsplit(s,'\n');
+           obj.split_s = regexp(s, '\n', 'split');
             obj.line_num = 1;
         end
         

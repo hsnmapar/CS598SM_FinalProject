@@ -6,9 +6,9 @@
 #cd ../
 
 
-dir1='Data/nov_26_1'
-dir2='Data/nov_26_2'
-dir3='Data/nov_26_3'
+dir1='Data/nov_26_1c'
+dir2='Data/nov_26_2c'
+dir3='Data/nov_26_3c'
 dir=$dir3
 files=`ls -1 ${dir} | grep .pnm`
 
