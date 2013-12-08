@@ -2,13 +2,16 @@ function[] = track_tag(detection_dir)
 % load kalman data
 load(fullfile(detection_dir, 'kalman_data.mat'));
 
-N=300;
+N=500;
 k_all = val_kalman.all;
 %% load detection info
 cached_dets = load_tag_dets(detection_dir);
 
 %% find first instance of detection
 first =[];
+myP5 = P5_JMD();       %RANSAC
+Max_Iterations = 300; %RANSAC
+Inlier_Threshold = 1;  %RANSAC
 
 for i = 1:length(cached_dets) 
     if ~isempty(cached_dets{i}.det)
@@ -30,16 +33,21 @@ for i = 1:length(cached_dets)-1
         det = cached_dets{i}.det;
         cached_dets{i}.hull = round([det(4:5); det(6:7); det(8:9); det(10:11)]);        
     else % compute homography from last frame
+        
+        
         xy_old = [x(relevant_pnts, i-1), y(relevant_pnts, i-1)];
         xy_new = [x(relevant_pnts, i), y(relevant_pnts, i)];        
-        H = compute_homography(xy_old, xy_new);
+        Ho = compute_homography(xy_old, xy_new);
+        [H, ~] = myP5.Compute_Homography_RANSAC( {xy_new xy_old}, Max_Iterations, Inlier_Threshold);
+        
         prev_hull = cached_dets{i-1}.hull;
         
-        cached_dets{i}.hull = apply_homography(H, prev_hull);
+        cached_dets{i}.hull = apply_homography(H', prev_hull);
+        
     end
-    plot(cached_dets{i}.hull(:,1), cached_dets{i}.hull(:,2))
+    plot( [cached_dets{i}.hull(:,1); cached_dets{i}.hull(1,1) ], [cached_dets{i}.hull(:,2); cached_dets{i}.hull(1,2)],'g','LineWidth',4)
     drawnow;
-    keyboard;
+    %keyboard;
     hold off;
 end
 
@@ -89,7 +97,7 @@ if length(find(relevant_pnts)) >=5
     return;
 else
     rad = rad+2;
-    [rad relevant_pnts] = expand_circle(rad, cntr, xy);
+    [rad relevant_pnts] = expand_circle(rad, cntr, xy, vals_next);
 end
 
 
