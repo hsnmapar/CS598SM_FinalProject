@@ -5,7 +5,7 @@ load(fullfile(detection_dir, 'kalman_data.mat'));
 N=500;
 k_all = val_kalman.all;
 %% load detection info
-cached_dets = load_tag_dets(detection_dir);
+cached_dets = load_tag_dets(detection_dir, val_tags.all);
 
 %% find first instance of detection
 first =[];
