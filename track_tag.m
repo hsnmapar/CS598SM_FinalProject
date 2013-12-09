@@ -1,4 +1,4 @@
-function[err] = track_tag(detection_dir) 
+function[err,cached_dets] = track_tag(detection_dir) 
 % load kalman data
 load(fullfile(detection_dir, 'kalman_data.mat'));
 
@@ -8,19 +8,19 @@ load(fullfile(detection_dir, 'kalman_data.mat'));
 
 %types = {'all', 'subsample_even', 'subsample_random'};
 
-cached_dets_gt = internal(detection_dir, val_kalman.all, load_tag_dets(detection_dir, val_tags.all));
+cached_dets.gt = internal(detection_dir, val_kalman.all, load_tag_dets(detection_dir, val_tags.all));
 
-err.gt = get_error(cached_dets_gt, val_tags.all);
+err.gt = get_error(cached_dets.gt, val_tags.all);
 
 for i = 1:length(val_kalman.subsample_even)
-    cached_dets = internal(detection_dir, val_kalman.subsample_even{i}, load_tag_dets(detection_dir, val_tags.subsample_even{i}));
-    err.subsample_even{i} = get_error(cached_dets, val_tags.all);
+    cached_dets.subsample_even{i} = internal(detection_dir, val_kalman.subsample_even{i}, load_tag_dets(detection_dir, val_tags.subsample_even{i}));
+    err.subsample_even{i} = get_error(cached_dets.subsample_even{i}, val_tags.all);
 end
 
 for i = 1:size(val_kalman.subsample_random,1)
     for j = 1:size(val_kalman.subsample_random,2)
-        cached_dets = internal(detection_dir, val_kalman.subsample_random{i,j}, load_tag_dets(detection_dir, val_tags.subsample_random{i,j}));
-        err.subsample_random{i,j} = get_error(cached_dets, val_tags.all);
+        cached_dets.subsample_random{i,j} = internal(detection_dir, val_kalman.subsample_random{i,j}, load_tag_dets(detection_dir, val_tags.subsample_random{i,j}));
+        err.subsample_random{i,j} = get_error(cached_dets.subsample_random{i,j}, val_tags.all);
     end
 end
 
@@ -81,7 +81,7 @@ for i = first:length(cached_dets)-1
     [rad, relevant_pnts] = expand_circle(k_all(i,3), k_all(i,1:2), [x(:,i), y(:,i)], val(:,i+1));
     %plot_circle(round(k_all(i,1)), round(k_all(i,2)), round(k_all(i,3)));
 
-    if i == first % first frame, just draw the 
+    if i == first || ~isempty(cached_dets{i}.det) % first frame, just draw the 
         det = cached_dets{i}.det;
         cached_dets{i}.hull = round([det(4:5); det(6:7); det(8:9); det(10:11)]);        
     else % compute homography from last frame

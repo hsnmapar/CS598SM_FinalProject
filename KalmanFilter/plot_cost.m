@@ -1,4 +1,4 @@
-function [ C_concat ] = plot_cost( cost, fig)
+function [ C_concat ] = plot_cost( cost)
 
 C_concat = [cost.all,NaN,NaN,NaN];
 
