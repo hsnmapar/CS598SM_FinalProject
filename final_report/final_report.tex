@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage{amsmath}
 \usepackage{fullpage}
+\usepackage{enumerate}
 \title{Robust Fiducial Marker Tracking}
 \author{Joe Degol, Jason Rock, Kevin Shih}
 
@@ -8,17 +9,81 @@
 \maketitle
 
 \section{Introduction}
+Fiducial marking is [rough description of fiducial markers and why they matter].
+
+In this project, we tackle the problem of tightly tracking a fiducial marker through a series of frames. Unlike common tracking problems such as face tracking, we require that the tracker tightly follow the four corners of a fiducial marker through various viewpoint changes. 
 
 \section{Approach}
+Because the fiducial detecting can be efficiently run in real time, we opt to use it when it is available. However, because its parameters are set to cut off at very high precisions to avoid false positives, tag detections are often missed in frames where there is too much motion blur or the size of the tag is too small due to distance and/or angle.
+
+Our overall approach is as follows:
+\begin{enumerate}
+\item Extract tag detections using fiducial marker detection code
+\item Track interest points across image sequences using KLT
+\item Smooth over detection gaps with Extended Kalman Filtering(EKF)
+\item Compute homographic projection on tracked feature points within EKF proposed area
+\item Apply projection to bounding quadrilateral from previous frame to determine new 4-corner coordinates
+\end{enumerate}
 
 \subsection{Detecting Fiducial Markers}
+We used April Tags [citation here] for our choice of fiducial marker. We ran the provided detection code over each frame using default parameters and recorded the 4 corners and center coordinates.
+\subsection{Tracking Interest Points with KLT}
 
 \subsection{Kalman Filtering}
 
 \subsection{Solving for the Homography}
+% cite alumni.media.mit.edu/~cwren/interpolator
+The projecton matrix mapping coordinates in frame $t-1$ to frame $t$ has 8 degrees of freedom. Thus, we need at least 4 feature point correspondences from the approximate region of the fiducial tag to solve. 
+\begin{equation}
+\begin{bmatrix}
+x_{t}W\\
+y_{t}W\\
+W
+\end{bmatrix}
+= \begin{bmatrix}
+a&b&c\\
+d&d&f\\
+g&h&1\\
+\end{bmatrix}
+\begin{bmatrix}
+x_{t-1}\\
+y_{t-1}\\
+1
+\end{bmatrix}
+\end{equation}
+
+Using the proposed region from the Kalman filter, we isolate 4 KLT interest point correspondences  with Random Sample Consensus (RANSAC), and output output a Homography matrix. If the search area is too small to contain enough points, we slowly exapend the radius until enough tracked interest points are available.
+
+\begin{equation}
+\begin{bmatrix}
+x_{t-1,1}& y_{t-1,1}&1&0&0&0 &-x_{t,1}x_{t-1}& -x_{t,1}y_{t-1,1}\\
+0&0&0&x_{t-1,1}& y_{t-1,1}&1& -y_{t,1}x_{t-1} &-y_{t,1}y_{t-1,1}\\
+&&&&\vdots&&\\
+x_{t-1,N}& y_{t-1,N}&1&0&0&0& -x_{t,N}x_{t-1,N}& -x_{t,1}y_{t-1,N}\\
+0&0&0&x_{t-1,N}& y_{t-1,N}&1& -y_{t,N}x_{t-1,N}& -y_{t,1}y_{t-1,N}\\
+\end{bmatrix}
+\begin{bmatrix}
+a\\
+b\\
+c\\
+d\\
+e\\
+f\\
+g\\
+h\\
+\end{bmatrix} = 
+\begin{bmatrix}
+x_{t,1}\\
+y_{t,1}\\
+\vdots\\
+x_{t,N}\\
+x_{t,N}\\
+\end{bmatrix}
+\end{equation}
 
 \section{Experiments and Results}
 
+\subsection{Datasets}
 
 
 
