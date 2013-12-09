@@ -2,6 +2,7 @@
 \usepackage{amsmath}
 \usepackage{fullpage}
 \usepackage{enumerate}
+\usepackage{graphicx}
 \title{Robust Fiducial Marker Tracking}
 \author{Joe Degol, Jason Rock, Kevin Shih}
 
@@ -30,6 +31,23 @@ We used April Tags [citation here] for our choice of fiducial marker. We ran the
 \subsection{Tracking Interest Points with KLT}
 
 \subsection{Kalman Filtering}
+Fiducial marker detections are prone to occassional loss and rather expensive to run for every frame.  It would be advantageous to be able to recover from loss and reduce the number of frames which require detection.  This problem lends itself well to an Extended Kalman Filter over the location and size of the fiducial marker.  We use a constant velocity model of the system dynamics, estimating the location and velocity for the three terms.  
+\begin{align}
+x_k &= \left[ \begin{array}{cccccc} 
+1 & 0 & 0 & d & 0 & 0 \\
+0 & 1 & 0 & 0 & d & 0 \\
+0 & 0 & 1 & 0 & 0 & d \\
+0 & 0 & 0 & 1 & 0 & 0\\
+0 & 0 & 0 & 0 & 1 & 0\\
+0 & 0 & 0 & 0 & 0 & 1
+\end{array}\right] x_{k-1} + w_{k-1}\\
+z_k &= \left[ \begin{array}{cccccc}
+1 & 0 & 0 & 0 & 0 & 0\\
+0 & 1 & 0 & 0 & 0 & 0\\
+0 & 0 & 1 & 0 & 0 & 0\end{array}\right] x_k + v_{k}
+\end{align}
+
+A better model for the system that we considered was estimating location and rotation of the camera.  However, we this would have required a much more complicated model, including a calibrated camera.  The basic parameterization for extrinsics would have not been acceptable as rotation and translation are strongly tied.  We stuck with our original model because image based techniques are widely used in the tracking literature and achieved good results on our problem.[citation for tracking techniques]
 
 \subsection{Solving for the Homography}
 % cite alumni.media.mit.edu/~cwren/interpolator
@@ -82,6 +100,19 @@ x_{t,N}\\
 \end{equation}
 
 \section{Experiments and Results}
+We ran the April Tag detector [cite] on a variety of data collected by using a handheld camera moved by a person.  For some of our data we attempted to stretch the limits of the tag detector such that there would be breaks in the detection to demonstrate the validity of our approach on real data.  For others we attempted to provide a dataset which could be ground truthed by the tag detection so that it could be subsampled as postprocessing.  Ultimately we performed a series of experiments on all the collected data.  We sampled the data at a rate between every second to tenth image.  We also sampled randomly such that we had $^1/_2$ to $^1/_{10}$ of the original data.  For the random sample, we performed the sample ten times and averaged the result.
+
+We first report the error of the Kalman center with the ground truth center.  This error is reported as an average error over all frames for the dataset.
+\begin{figure}
+\includegraphics[width=.5\textwidth]{kalman_nov_1.png}
+\includegraphics[width=.5\textwidth]{kalman_nov_2.png}
+\includegraphics[width=.5\textwidth]{kalman_nov_2.png}
+\includegraphics[width=.5\textwidth]{kalman_dec_1.png}
+\includegraphics[width=.5\textwidth]{kalman_dec_2.png}
+\includegraphics[width=.5\textwidth]{kalman_dec_3.png}
+\caption{Kalman filter error on all datasets.  It is important to note that the Kalman filter on equally spaced sampling produces results which are often acceptable as compared to  random sampling. This implies that systems which evaluate detections at a subset of frames could be designed.}
+\label{fig:kalman_error}
+\end{figure}
 
 \subsection{Datasets}
 
