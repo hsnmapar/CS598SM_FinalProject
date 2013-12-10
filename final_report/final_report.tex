@@ -114,6 +114,18 @@ We first report the error of the Kalman center with the ground truth center.  Th
 \label{fig:kalman_error}
 \end{figure}
 
+
+When we combined the Kalman filter with the local homography estimation for tracking the fiducial marker we get a prediction of the corners of the tag for every frame.  We compare the corners predicted with the ground truth corners defined by the April tag detections.  We report results on no subsampling, 1/2, 1/5, and 1/10th both random and equally spaced.  When we have a detection in the subsampled data we restart the tag at the ground truth location, as such for the even sampling we see that there is a cyclic response of drift for the sampling period and then a correction.  Random sampling has occassional bad periods where there is no correction phase for a long period and the result becomes quite bad.
+\begin{figure}
+\includegraphics[width=.5\textwidth]{Corner_error_nov1.png}
+\includegraphics[width=.5\textwidth]{Corner_error_nov2.png}
+\includegraphics[width=.5\textwidth]{Corner_error_nov3.png}
+\includegraphics[width=.5\textwidth]{Corner_error_dec1.png}
+\includegraphics[width=.5\textwidth]{Corner_error_nov2.png}
+\includegraphics[width=.5\textwidth]{Corner_error_dec3.png}
+\caption{Error of the corners of the fiducial marker predicted by our system with respect to the ground truth April Tag detector.  Blank areas represent locations where the April Tag was not detected by the ground truth detector.  See our later experiment for the analysis of our detector in these areas.}
+\label{fig:corner_error}
+
 \subsection{Datasets}
 
 
