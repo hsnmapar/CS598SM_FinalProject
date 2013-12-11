@@ -14,16 +14,17 @@ Fiducial markers are artificial objects added to a scene that can be easily dete
 
 \begin{figure}[h]
 \centering
-\includegraphics[scale=.2]{MarkerApplications}
+%\includegraphics[scale=.2]{MarkerApplications}
 \caption{Fiducial Marker Applications: (A) depicts fiducial markers being used in a motion capture system to track human motion, (B) depicts fiducial markers being used with the Nintendo 3DS handheld video game console for augmented reality, and (C) depicts fiducial markers being used for robot swarm localization.}
 \label{fig:applications}
 \end{figure}
 
+For robotics applications, planar patterns have emerged as the popular fiducial marker design. Planar markers are useful for robotics because a plane to plane homography can be estimated, where the homography also defines the 6 degree of freedom pose of the camera relative to the tag. However, challenges exist for planar markers. In particular, the tag becomes difficult to detect at steep out-of-plane rotations, far depths, quick motions inducing blur, and camera jitter causing intermitently dropped detections.
 
-
-In this project, we tackle the problem of tightly tracking a fiducial marker through a series of frames. Unlike common tracking problems such as face tracking, we require that the tracker tightly follow the four corners of a fiducial marker through various viewpoint changes. 
+In this project, we investigate how kalman filtering can be used to address the aforementioned challenges. Unlike common tracking problems such as face tracking, we require that the tracker tightly follow the four corners of a fiducial marker through various viewpoint changes. The remainder of this paper is presented as follows: Section \ref{sec:approach} outlines our approach and Section \ref{sec:results} presents our results.
 
 \section{Approach}
+\label{sec:approach}
 \begin{figure}
 \centering
 \includegraphics[scale=.15]{flowchart.pdf}
@@ -115,6 +116,7 @@ x_{t,N}\\
 \end{equation}
 
 \section{Experiments and Results}
+\label{sec:results}
 We ran the April Tag detector [cite] on a variety of data collected by using a handheld camera moved by a person.  For some of our data we attempted to stretch the limits of the tag detector such that there would be breaks in the detection to demonstrate the validity of our approach on real data.  For others we attempted to provide a dataset which could be ground truthed by the tag detection so that it could be subsampled as postprocessing.  Ultimately we performed a series of experiments on all the collected data.  We sampled the data at a rate between every second to tenth image.  We also sampled randomly such that we had $^1/_2$ to $^1/_{10}$ of the original data.  For the random sample, we performed the sample ten times and averaged the result.
 
 We first report the error of the Kalman center with the ground truth center.  This error is reported as an average error over all frames for the dataset.
