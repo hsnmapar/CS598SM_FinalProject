@@ -15,6 +15,9 @@ Fiducial marking is [rough description of fiducial markers and why they matter].
 In this project, we tackle the problem of tightly tracking a fiducial marker through a series of frames. Unlike common tracking problems such as face tracking, we require that the tracker tightly follow the four corners of a fiducial marker through various viewpoint changes. 
 
 \section{Approach}
+\includegraphics[scale=.3]{flowchart.pdf}
+
+
 Because the fiducial detecting can be efficiently run in real time, we opt to use it when it is available. However, because its parameters are set to cut off at very high precisions to avoid false positives, tag detections are often missed in frames where there is too much motion blur or the size of the tag is too small due to distance and/or angle.
 
 Our overall approach is as follows:
