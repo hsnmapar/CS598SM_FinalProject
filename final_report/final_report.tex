@@ -196,25 +196,21 @@ We first tested how well the AprilTags system performed on our data sets. The re
 \label{fig:table2}
 \end{figure}
 
-Besides hole filling, another practical application of our system is for saving on bandwidth/computation by degrading the signal intentionally and relying on the kalman filter to fill the gaps. To test this, we sampled the data at a rate between every second to tenth image.  We also sampled randomly such that we had $^1/_2$ to $^1/_{10}$ of the original data.  For the random sample, we performed the sample ten times and averaged the result. We report the error of the Kalman center with the ground truth center.  This error is reported as an average error over all frames for the dataset and is shown in Figure \ref{fig:kalman_error} where the error is exponential along the y-axis, the drop rate is along the x-axis, warm colors represent random drops, and cool colors represent even drops.
+Besides hole filling, another practical application of our system would be for degrading the signal intentionally and rely on the kalman filter to fill the gaps. To test this, we sampled the data at a rate between every second to tenth image.  We also sampled randomly such that we had $^1/_2$ to $^1/_{10}$ of the original data.  For the random sample, we performed the sample ten times and averaged the result. We report the error of the Kalman center with the ground truth center.  This error is reported as an average error over all frames for the dataset and is shown in Figure \ref{fig:kalman_error}.
 
 \begin{figure*}
-\centering
-\includegraphics[scale=.35]{kalman.png}
+\includegraphics[scale=.3]{kalman}
 \caption{Kalman filter error on all datasets.  It is important to note that the Kalman filter on equally spaced sampling produces results which are often acceptable as compared to random sampling. This implies that systems which evaluate detections at a subset of frames could be designed.}
 \label{fig:kalman_error}
 \end{figure*}
 
-As can be seen from Figure \ref{fig:kalman_error}, the error grows exponentially with the number of dropped detections. In addition, the error is significantly larger for randomly dropped detections, where as the error remains low for evenly dropped detections. Another notable phenomenon of the data is that in some data sets, the error increases in the $\frac{1}{3},\frac{1}{4},\frac{1}{5}$ region, then decreases slightly after that. We hypothesize that this occurs because a crucial set of frames are being dropped that dictate a change in motion. Since the frames are dropped during this motion change, the kalman filter is unable to properly update the estimate, thus the error increases. Based on these results, we claim that an even drop of $\frac{1}{5}$ would provide the best trade off between low error and signal degradation.
+
 
 \begin{figure*}
-\centering
-\includegraphics[scale=.35]{Corner_error.png}
+\includegraphics[scale=.3]{Corner_error}
 \caption{error plot}
 \label{fig:error_plot}
 \end{figure*}
-
-Paragraph about Figure \ref{fig:error_plot}.
 %----- Results -----%
 
 
@@ -225,7 +221,7 @@ Paragraph about Figure \ref{fig:error_plot}.
 In this paper, we present a novel application of the Extended Kalman Filter. We provide a formulation of the Extended Kalman Filter that is appropriate for fiducial marker tracker, and demonstrate that our method is capable of improving current state of the art detections systems by filling in missed detections. We also demonstrate that our method can be used on an intentionally degraded signal. Future work with the project could include employing the pose estimate as part of the estimation; in particular, can filtering be used to smooth the pose estimation while also using the pose estimation to achieve a better estimate on the tag location.
 
 For this project, all authors contributed equally.
-\textbf{Joseph DeGol} implemented RANSAC, collected the data, generated the KLT tracks, created the poster and presentation, implemented a ground truthing tool and ground truthed new detection estimates, calculated the results for tables 1 and 2, and wrote his share of the paper. \textbf{Jason Rock} implemented the estended kalman filter, calculated the results for dropping frames, and wrote his share of the poster and paper. \textbf{Kevin Shih} implemented the connection of system elements, collected the data, generated the AprilTag detections, generated video and qualitative results of the system, and did his share of the poster, presentation, and paper.
+\textbf{Joseph DeGol} implemented RANSAC, collected the data, generated the KLT tracks, created the poster and presentation, implemented a ground truthing tool and ground truthed new detection estimates, calculated the results for tables 1 and 2, and wrote his share of the paper. \textbf{Jason Rock} implemented the extended kalman filter, calculated the results for dropping frames, and wrote his share of the poster and paper. \textbf{Kevin Shih} implemented the connection of system elements, collected the data, generated the AprilTag detections, generated video and qualitative results of the system, and did his share of the poster, presentation, and paper.
 %----- Conclusion -----%
 
 
