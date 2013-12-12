@@ -1,36 +1,56 @@
-\documentclass[12pt]{article}
+\documentclass[letterpaper,10pt,conference]{IEEEtran}
+\IEEEoverridecommandlockouts
 \usepackage{amsmath}
 \usepackage{fullpage}
 \usepackage{enumerate}
 \usepackage{graphicx}
 \usepackage{cite}
+%\usepackage{natbib}
+
 \title{Kalman Filtering for Improved Fiducial Marker Tracking}
 \author{Joe Degol, Jason Rock, Kevin Shih}
 
 \begin{document}
 \maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
 
+
+
+%----- Abstract -----%
+\begin{abstract}
+In this paper, we address some common challenges of current state-of-the-art fiducial marker systems. In particular, we formulate and apply an extended kalman filter for improving detection rates on blurred images, intermittent drops, steep out-of-plane rotations, and significant depths. We provide quantitative results demonstrating the effectiveness of our algorithm for "hole filling", and also demonstrate how our system can save on bandwidth by hole filling degraded signals. We also provide qualitative results in the form of video sequences.
+\end{abstract}
+%----- Abstract -----%
+
+
+
+%----- Introduction -----%
 \section{Introduction}
-Fiducial markers are artificial objects added to a scene that can be easily detected. They can take many forms such as planar tags and infrared spheres and have shown utility for applications in motion capture systems, augmented reality \cite{Fiala2005,Fiala2010}, and robotics \cite{Olson2011}. Figure \ref{fig:applications} depicts some real world applications of fiducial markers.
+Fiducial markers are artificial objects added to a scene that can be easily detected. They can take many forms such as planar tags and infrared spheres and have shown utility for applications in motion capture systems, augmented reality \cite{Fiala2005}\cite{Fiala2010}, and robotics \cite{Olson2011}. Figure \ref{fig:applications} depicts some real world applications of fiducial markers.
 
-\begin{figure}[h]
+\begin{figure}
 \centering
-%\includegraphics[scale=.2]{MarkerApplications}
+\includegraphics[scale=.25]{MarkerApplications}
 \caption{Fiducial Marker Applications: (A) depicts fiducial markers being used in a motion capture system to track human motion, (B) depicts fiducial markers being used with the Nintendo 3DS handheld video game console for augmented reality, and (C) depicts fiducial markers being used for robot swarm localization.}
 \label{fig:applications}
 \end{figure}
 
 For robotics applications, planar patterns have emerged as the popular fiducial marker design \cite{Sattar2007,Olson2011}. Planar markers are useful for robotics because a plane to plane homography can be estimated, where the homography also defines the 6 degree of freedom pose of the camera relative to the tag \cite{Olson2011}. However, challenges exist for planar markers. In particular, the tag becomes difficult to detect at steep out-of-plane rotations, far depths, quick motions inducing blur, and camera jitter causing intermitently dropped detections. These challenges are depicted in Figure \ref{fig:challenges}.
 
-\begin{figure}[h]
+\begin{figure}
 \centering
-%\includegraphics[scale=.2]{MarkerChallenges}
+\includegraphics[scale=.2]{MarkerChallenges}
 \caption{Planar Tag Detection Challenges: (A) depicts difficulty with out-of-plane rotations, (B) depicts difficulty with depth, (C) depicts difficulty with blur, (D) depicts difficulty with intermittent detection drops.}
 \label{fig:challenges}
 \end{figure}
 
 In this project, we investigate how kalman filtering can be used to address the aforementioned challenges. Unlike common tracking problems such as face tracking, we require that the tracker tightly follow the four corners of a fiducial marker through various viewpoint changes. The remainder of this paper is presented as follows: Section \ref{sec:approach} outlines our approach, Section \ref{sec:results} presents our results, and Section \ref{sec:conclusion} provides concluding remarks and each group members contributions.
+%----- Introduction -----%
 
+
+
+%----- Approach -----%
 \section{Approach}
 \label{sec:approach}
 \begin{figure}
@@ -57,7 +77,7 @@ We used AprilTags \cite{Olson2011} for our choice of fiducial marker. We ran the
 We used the Kanade-Lucas-Tomasi (KLT) Feature Point Tracker \cite{Lucas1981,Tomasi1991,Shi1994} to track feature points in each frame of our video sequence.
 
 \subsection{Kalman Filtering}
-Fiducial marker detections are prone to occassional loss and rather expensive to run for every frame.  It would be advantageous to be able to recover from loss and reduce the number of frames which require detection.  This problem lends itself well to an Extended Kalman Filter over the location and size of the fiducial marker.  We use a constant velocity model of the system dynamics, estimating the location and velocity for the three terms.  
+Fiducial marker detections are prone to occassional loss and expensive to run for every frame.  It is advantageous to recover from loss and reduce the number of frames which require detection.  This problem lends itself well to an Extended Kalman Filter over the location and size of the fiducial marker.  We use a constant velocity model of the system dynamics, estimating the location and velocity for the three terms.  
 \begin{align}
 x_k &= \left[ \begin{array}{cccccc} 
 1 & 0 & 0 & d & 0 & 0 \\
@@ -73,7 +93,9 @@ z_k &= \left[ \begin{array}{cccccc}
 0 & 0 & 1 & 0 & 0 & 0\end{array}\right] x_k + v_{k}
 \end{align}
 
-A better model for the system that we considered was estimating location and rotation of the camera.  However, this would have required a much more complicated model, including a calibrated camera.  The basic parameterization for extrinsics would have not been acceptable as rotation and translation are strongly tied.  We stuck with our original model because image based techniques are widely used in the tracking literature and achieved good results on our problem.[citation for tracking techniques]
+%%% FIX THIS PARAGRAPH
+An alternative model that we considered involves estimating location and rotation of the camera.  However, this model requires calibrated camera, extensive data sets.  The basic parameterization for extrinsics would have not been acceptable as rotation and translation are strongly tied.  We stuck with our original model because image based techniques are widely used in the tracking literature and achieved good results on our problem.[citation for tracking techniques]
+%%% FIX THIS PARAGRAPH
 
 \subsection{Solving for the Homography}
 % cite alumni.media.mit.edu/~cwren/interpolator
@@ -96,7 +118,7 @@ y_{t-1}\\
 \end{bmatrix}
 \end{equation}
 
-Using the proposed region from the Kalman filter, we isolate 4 KLT interest point correspondences  with Random Sample Consensus (RANSAC), and output a Homography matrix. If the search area is too small to contain enough points, we slowly expand the radius until enough tracked interest points are available.
+Using the proposed region from the Kalman filter, we isolate 4 KLT interest point correspondences using Random Sample Consensus (RANSAC), and output a Homography matrix. If the search area is too small to contain enough points, we slowly expand the radius until enough tracked interest points are available.
 
 \begin{equation}
 \begin{bmatrix}
@@ -124,45 +146,60 @@ x_{t,N}\\
 x_{t,N}\\
 \end{bmatrix}
 \end{equation}
+%----- Approach -----%
 
+
+
+%----- Results -----%
 \section{Experiments and Results}
 \label{sec:results}
 We collected six video sequences using a handheld camera moved by a person. Our data was collected in an effort to focus on addressing the challenges previously addressed in Figure \ref{fig:challenges}. Specifically, one dataset (Depth) starts close to the tag and retreats to increase the depth from the tag. Another dataset (OOP Rotation) starts in a forward facing position and moves to steep angles of out-of-plane rotation on both sides of the tag. Two more datasets (Blur Lateral and Blur Depth) begin by moving slowly, then accelerate to produce blurry frames, then slow down again, where the movement occurs in the respective lateral or depth direction. Finally, we have two more datasets (General 1 and 2) that contain aspects of all previous datasets and their respective challenging aspects.
 
-We first tested how well the AprilTags system performed on our data sets. The results of this are shown in Table \ref{fig:table1}. We attribute the lost frames in each sequence to the challenges cases. Next, we included our system with the AprilTags detections. As can be seen, the total number of detections increases with the addition of our system. In Table \ref{fig:table2}, we present quantitative results addressing which challenges are system works best at rectifying. In particular, Table \ref{fig:table2} shows the number and percent of detections we rectify out of the total missed detections. Based on the results of \ref{fig:table2}, we can see that we rectify over 70\% of the missed detections for General 1, General 2, Lateral Blur, and Depth Blur. This demonstrates that our method works well with Blur and Intermittent drops. We reason that the effectiveness of our method on these cases is because the Kalman Filter is able to accurately estimate the missing regions to perform "hole filling". Conversely, our method performs poorly on Depth because once the tag is too far away, it is lost, and the system has no way to update the Kalman Filter with new observations. Thus, the estimate diverges. Similar reasoning can be used to explain our mediocre results with OOP Rotation; however, if the rotation is steep, and then returns to a detectable angle, our system is able to fill that gap.
-
 \begin{figure}
 \centering
-\caption{Table1}
+\includegraphics[scale=.4]{Table1}
+\caption{This table presents results for the baseline and with our system.}
 \label{fig:table1}
 \end{figure}
 
+We first tested how well the AprilTags system performed on our data sets. The results of this are shown in Figure \ref{fig:table1}. We attribute the lost frames in each sequence to the challenges cases. Next, we included our system with the AprilTags detections. As can be seen, the total number of detections increases with the addition of our system. In Figure \ref{fig:table2}, we present quantitative results addressing which challenges are system works best at rectifying. In particular, Table \ref{fig:table2} shows the number and percent of detections we rectify out of the total missed detections. Based on the results of Figure \ref{fig:table2}, we can see that we rectify over 70\% of the missed detections for General 1, General 2, Lateral Blur, and Depth Blur. This demonstrates that our method works well with Blur and Intermittent drops. We reason that the effectiveness of our method on these cases is because the Kalman Filter is able to accurately estimate the missing regions to perform "hole filling". Conversely, our method performs poorly on Depth because once the tag is too far away, it is lost, and the system has no way to update the Kalman Filter with new observations. Thus, the estimate diverges. Similar reasoning can be used to explain our mediocre results with OOP Rotation; however, if the rotation is steep, and then returns to a detectable angle, our system is able to fill that gap.
+
 \begin{figure}
 \centering
-\caption{Table 2}
+\includegraphics[scale=.4]{Table2}
+\caption{This table presents our results against each challenge.}
 \label{fig:table2}
 \end{figure}
 
-Besides hole filling, another practical application of our system would be for degrading the signal intentionally and rely on the kalman filter to fill the gaps. To test this, we sampled the data at a rate between every second to tenth image.  We also sampled randomly such that we had $^1/_2$ to $^1/_{10}$ of the original data.  For the random sample, we performed the sample ten times and averaged the result.
+Besides hole filling, another practical application of our system would be for degrading the signal intentionally and rely on the kalman filter to fill the gaps. To test this, we sampled the data at a rate between every second to tenth image.  We also sampled randomly such that we had $^1/_2$ to $^1/_{10}$ of the original data.  For the random sample, we performed the sample ten times and averaged the result. We report the error of the Kalman center with the ground truth center.  This error is reported as an average error over all frames for the dataset and is shown in Figure \ref{fig:kalman_error}.
 
-We report the error of the Kalman center with the ground truth center.  This error is reported as an average error over all frames for the dataset and is shown in Figure \ref{fig:kalman_error}.
-\begin{figure}[h]
-\includegraphics[width=.5\textwidth]{kalman_nov_1.png}
-\includegraphics[width=.5\textwidth]{kalman_nov_2.png}
-\includegraphics[width=.5\textwidth]{kalman_nov_2.png}
-\includegraphics[width=.5\textwidth]{kalman_dec_1.png}
-\includegraphics[width=.5\textwidth]{kalman_dec_2.png}
-\includegraphics[width=.5\textwidth]{kalman_dec_3.png}
-\caption{Kalman filter error on all datasets.  It is important to note that the Kalman filter on equally spaced sampling produces results which are often acceptable as compared to  random sampling. This implies that systems which evaluate detections at a subset of frames could be designed.}
+\begin{figure*}
+\includegraphics[scale=.3]{kalman}
+\caption{Kalman filter error on all datasets.  It is important to note that the Kalman filter on equally spaced sampling produces results which are often acceptable as compared to random sampling. This implies that systems which evaluate detections at a subset of frames could be designed.}
 \label{fig:kalman_error}
-\end{figure}
+\end{figure*}
 
+
+
+\begin{figure*}
+\includegraphics[scale=.3]{Corner_error}
+\caption{error plot}
+\label{fig:error_plot}
+\end{figure*}
+%----- Results -----%
+
+
+
+%----- Conclusion -----%
 \section{Conclusion}
 \label{sec:conclusion}
 In this paper, we present a novel application of the Extended Kalman Filter. We provide a formulation of the Extended Kalman Filter that is appropriate for fiducial marker tracker, and demonstrate that our method is capable of improving current state of the art detections systems by filling in missed detections. We also demonstrate that our method can be used on an intentionally degraded signal. Future work with the project could include employing the pose estimate as part of the estimation; in particular, can filtering be used to smooth the pose estimation while also using the pose estimation to achieve a better estimate on the tag location.
 
 For this project, all authors contributed equally.
 \textbf{Joseph DeGol} implemented RANSAC, collected the data, generated the KLT tracks, created the poster and presentation, implemented a ground truthing tool and ground truthed new detection estimates, calculated the results for tables 1 and 2, and wrote his share of the paper. \textbf{Jason Rock} implemented the estended kalman filter, calculated the results for dropping frames, and wrote his share of the poster and paper. \textbf{Kevin Shih} implemented the connection of system elements, collected the data, generated the AprilTag detections, generated video and qualitative results of the system, and did his share of the poster, presentation, and paper.
+%----- Conclusion -----%
+
+
 
 \bibliographystyle{IEEEtran}
 \bibliography{Fiducial_Markers}
