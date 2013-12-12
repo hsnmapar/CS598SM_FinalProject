@@ -20,7 +20,7 @@
 
 %----- Abstract -----%
 \begin{abstract}
-In this paper, we address some common challenges of current state-of-the-art fiducial marker systems. In particular, we formulate and apply an extended kalman filter for improving detection rates on blurred images, intermittent drops, steep out-of-plane rotations, and significant depths. We provide quantitative results demonstrating the effectiveness of our algorithm for ``hole filling'', and also demonstrate how our system can save on bandwidth by sampling fewer frames. We also provide qualitative results in the form of video sequences.
+In this paper, we address some common challenges of current state-of-the-art fiducial marker systems. In particular, we formulate and apply an extended Kalman filter for improving detection rates on blurred images, intermittent drops, steep out-of-plane rotations, and significant depths. We provide quantitative results demonstrating the effectiveness of our algorithm for ``hole filling'', and also demonstrate how our system can save on bandwidth by sampling fewer frames. We also provide qualitative results in the form of video sequences.
 \end{abstract}
 %----- Abstract -----%
 
@@ -37,7 +37,7 @@ Fiducial markers are artificial objects added to a scene that can be easily dete
 \label{fig:applications}
 \end{figure}
 
-For robotics applications, planar patterns have emerged as the popular fiducial marker design \cite{Sattar2007,Olson2011}. Planar markers are useful for robotics because a plane to plane homography can be estimated, where the homography also defines the 6 degree of freedom pose of the camera relative to the tag \cite{Olson2011}. However, challenges exist for planar markers. In particular, the tag becomes difficult to detect at steep out-of-plane rotations, far depths, quick motions inducing blur, and camera jitter causing intermitently dropped detections. These challenges are depicted in Figure \ref{fig:challenges}.
+For robotics applications, planar patterns have emerged as the popular fiducial marker design \cite{Sattar2007,Olson2011}. Planar markers are useful for robotics because a plane to plane homography can be estimated, where the homography also defines the 6 degree of freedom pose of the camera relative to the tag \cite{Olson2011}. However, challenges exist for planar markers. In particular, the tag becomes difficult to detect at steep out-of-plane rotations, far depths, quick motions inducing blur, and camera jitter causing intermittently dropped detections. These challenges are depicted in Figure \ref{fig:challenges}.
 
 \begin{figure}
 \centering
@@ -78,7 +78,7 @@ We used AprilTags \cite{Olson2011} for our choice of fiducial marker. We ran the
 We used the Kanade-Lucas-Tomasi (KLT) Feature Point Tracker \cite{Lucas1981,Tomasi1991,Shi1994} to track feature points in each frame of our video sequence.
 
 \subsection{Kalman Filtering}
-Fiducial marker detections are prone to occassional loss and expensive to run for every frame.  It is advantageous to recover from loss and reduce the number of frames which require detection.  This problem lends itself well to an Extended Kalman Filter over the location and size of the fiducial marker.  We use a constant velocity model of the system dynamics, estimating the location and velocity for the three terms.
+Fiducial marker detections are prone to occasional loss and expensive to run for every frame.  It is advantageous to recover from loss and reduce the number of frames which require detection.  This problem lends itself well to an Extended Kalman Filter over the location and size of the fiducial marker.  We use a constant velocity model of the system dynamics, estimating the location and velocity for the three terms.
 %\begin{align}
 %x_k &= \left[ \begin{array}{cccccc}
 %1 & 0 & 0 & d & 0 & 0 \\
@@ -107,7 +107,7 @@ I_{3\times 3} & 0_{3\times 3}
 
 \subsection{Solving for the Homography}
 % cite alumni.media.mit.edu/~cwren/interpolator
-The projecton matrix mapping coordinates in frame $t-1$ to frame $t$ has 8 degrees of freedom. Thus, we need at least 4 feature point correspondences from the approximate region of the fiducial tag to solve. 
+The projection matrix mapping coordinates in frame $t-1$ to frame $t$ has 8 degrees of freedom. Thus, we need at least 4 feature point correspondences from the approximate region of the fiducial tag to solve. 
 \begin{equation}
 \begin{bmatrix}
 x_{t}W\\
@@ -181,7 +181,7 @@ One alternative method we considered was using the HMM in place of the homograph
 For this, we collected 24 separate video datasets for each possible hidden state combination. However, we did not finish implementing the HMM for this because we expected it would be too complex and perform worse than our proposed homographic solution.
 
 \subsection{Augmented Kalman Filtering}
-Another alternative model that we considered involves estimating location and rotation of the camera using an additional Kalman filter.  However, the parameterization for extrinsics would not have been acceptable as rotation and translation are strongly tied.  We opted for the model described in the approach section, as solving homographies with point correspondences was much simpler and would have worked just as well if not better.
+Another alternative model that we considered involves estimating location and rotation of the camera using an additional Kalman filter.  However, the parametrization for extrinsics would not have been acceptable as rotation and translation are strongly tied.  We opted for the model described in the approach section, as solving homographies with point correspondences was much simpler and would have worked just as well if not better.
 %----- Alternative Methods -----%
 
 
@@ -208,7 +208,7 @@ We first tested how well the AprilTags system performed on our data sets. The re
 \label{fig:table2}
 \end{figure}
 
-Besides hole filling, another practical application of our system would be for degrading the signal intentionally and rely on the kalman filter to fill the gaps. To test this, we sampled the data at a rate between every second to tenth image.  We also sampled randomly such that we had $^1/_2$ to $^1/_{10}$ of the original data.  For the random sample, we performed the sample ten times and averaged the result. We report the error of the Kalman center with the ground truth center.  This error is reported as an average error over all frames for the dataset and is shown in Figure \ref{fig:kalman_error}.
+Besides hole filling, another practical application of our system would be for degrading the signal intentionally and rely on the Kalman filter to fill the gaps. To test this, we sampled the data at a rate between every second to tenth image.  We also sampled randomly such that we had $^1/_2$ to $^1/_{10}$ of the original data.  For the random sample, we performed the sample ten times and averaged the result. We report the error of the Kalman center with the ground truth center.  This error is reported as an average error over all frames for the dataset and is shown in Figure \ref{fig:kalman_error}.
 
 We also evaluate the error of our whole system for estimating the corners of the fiducial marker.  We display results for evenly and randomly sampled data of $^1/_2, ^1/_5, ^1/_10$.  As above, random sample error is an average of ten runs.  The error reported is the average distance between the predicted corners and the AprilTag corners. This error is shown in Figure~\ref{fig:error_plot}
 \begin{figure*}
@@ -246,7 +246,7 @@ We also evaluate the error of our whole system for estimating the corners of the
 In this paper, we present a novel application of the Extended Kalman Filter. We provide a formulation of the Extended Kalman Filter that is appropriate for fiducial marker tracker, and demonstrate that our method is capable of improving current state of the art detections systems by filling in missed detections. We also demonstrate that our method can be used on an intentionally degraded signal. Future work with the project could include employing the pose estimate as part of the estimation; in particular, can filtering be used to smooth the pose estimation while also using the pose estimation to achieve a better estimate on the tag location.
 
 For this project, all authors contributed equally.
-\textbf{Joseph DeGol} implemented RANSAC, collected the data, generated the KLT tracks, created the poster and presentation, implemented a ground truthing tool and ground truthed new detection estimates, calculated the results for tables 1 and 2, and wrote his share of the paper. \textbf{Jason Rock} implemented the extended kalman filter, helped implement connection of system elements, calculated the results for dropping frames, and wrote his share of the poster and paper. \textbf{Kevin Shih} implemented the connection of system elements, collected the data, generated the AprilTag detections, generated video and qualitative results of the system, and did his share of the poster, presentation, and paper.
+\textbf{Joseph DeGol} implemented RANSAC, collected the data, generated the KLT tracks, created the poster and presentation, implemented a ground truthing tool and ground truthed new detection estimates, calculated the results for tables 1 and 2, and wrote his share of the paper. \textbf{Jason Rock} implemented the extended Kalman filter, helped implement connection of system elements, calculated the results for dropping frames, and wrote his share of the poster and paper. \textbf{Kevin Shih} implemented the connection of system elements, collected the data, generated the AprilTag detections, generated video and qualitative results of the system, and did his share of the poster, presentation, and paper.
 %----- Conclusion -----%
 
 
