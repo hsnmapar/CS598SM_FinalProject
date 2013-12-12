@@ -171,21 +171,25 @@ We first tested how well the AprilTags system performed on our data sets. The re
 \label{fig:table2}
 \end{figure}
 
-Besides hole filling, another practical application of our system would be for degrading the signal intentionally and rely on the kalman filter to fill the gaps. To test this, we sampled the data at a rate between every second to tenth image.  We also sampled randomly such that we had $^1/_2$ to $^1/_{10}$ of the original data.  For the random sample, we performed the sample ten times and averaged the result. We report the error of the Kalman center with the ground truth center.  This error is reported as an average error over all frames for the dataset and is shown in Figure \ref{fig:kalman_error}.
+Besides hole filling, another practical application of our system is for saving on bandwidth/computation by degrading the signal intentionally and relying on the kalman filter to fill the gaps. To test this, we sampled the data at a rate between every second to tenth image.  We also sampled randomly such that we had $^1/_2$ to $^1/_{10}$ of the original data.  For the random sample, we performed the sample ten times and averaged the result. We report the error of the Kalman center with the ground truth center.  This error is reported as an average error over all frames for the dataset and is shown in Figure \ref{fig:kalman_error} where the error is exponential along the y-axis, the drop rate is along the x-axis, warm colors represent random drops, and cool colors represent even drops.
 
 \begin{figure*}
-\includegraphics[scale=.3]{kalman}
+\centering
+\includegraphics[scale=.35]{kalman.png}
 \caption{Kalman filter error on all datasets.  It is important to note that the Kalman filter on equally spaced sampling produces results which are often acceptable as compared to random sampling. This implies that systems which evaluate detections at a subset of frames could be designed.}
 \label{fig:kalman_error}
 \end{figure*}
 
-
+As can be seen from Figure \ref{fig:kalman_error}, the error grows exponentially with the number of dropped detections. In addition, the error is significantly larger for randomly dropped detections, where as the error remains low for evenly dropped detections. Another notable phenomenon of the data is that in some data sets, the error increases in the $\frac{1}{3},\frac{1}{4},\frac{1}{5}$ region, then decreases slightly after that. We hypothesize that this occurs because a crucial set of frames are being dropped that dictate a change in motion. Since the frames are dropped during this motion change, the kalman filter is unable to properly update the estimate, thus the error increases. Based on these results, we claim that an even drop of $\frac{1}{5}$ would provide the best trade off between low error and signal degradation.
 
 \begin{figure*}
-\includegraphics[scale=.3]{Corner_error}
+\centering
+\includegraphics[scale=.35]{Corner_error.png}
 \caption{error plot}
 \label{fig:error_plot}
 \end{figure*}
+
+Paragraph about Figure \ref{fig:error_plot}.
 %----- Results -----%
 
 
