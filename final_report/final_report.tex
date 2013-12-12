@@ -171,13 +171,20 @@ x_{t,N}\\
 \end{equation}
 %----- Approach -----%
 
+
+
+%----- Alternative Methods -----%
 \section{Alternative Methods for Orientation Prediction}
 \subsection{HMM}
 One alternative method we considered was using the HMM in place of the homography. An HMM would be learned using translational distances of the box corners between two frames as observations. These would have to be discretized and coded as a 1 dimensional variable. Its hidden states would be \{UP DOWN LEFT RIGHT\}$\times$\{FORWARD BACKWARD\}. For inference, we would input a given sequence of corner translations (using provided detections) and infer the most likely next state and observations in the sequence.
 
-For this, we collected 24 separate video datasets for each possible hidden state combination. However, we did not finish implementing the HMM for this because we expected it would be too complex and  barely do as well as our proposed homographic solution.
+For this, we collected 24 separate video datasets for each possible hidden state combination. However, we did not finish implementing the HMM for this because we expected it would be too complex and perform worse than our proposed homographic solution.
+
 \subsection{Augmented Kalman Filtering}
-Another alternative model that we considered involves estimating location and rotation of the camera using an additional Kalman filter.  However, the parameterization for extrinsics would not have been acceptable as rotation and translation are strongly tied.  We opted for the model described in this section and the next, as solving homographies with point correspondences was much simpler and would have worked just as well if not better.
+Another alternative model that we considered involves estimating location and rotation of the camera using an additional Kalman filter.  However, the parameterization for extrinsics would not have been acceptable as rotation and translation are strongly tied.  We opted for the model described in the approach section, as solving homographies with point correspondences was much simpler and would have worked just as well if not better.
+%----- Alternative Methods -----%
+
+
 
 %----- Results -----%
 \section{Experiments and Results}
