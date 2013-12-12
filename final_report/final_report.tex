@@ -210,7 +210,7 @@ We first tested how well the AprilTags system performed on our data sets. The re
 
 Besides hole filling, another practical application of our system would be for degrading the signal intentionally and rely on the kalman filter to fill the gaps. To test this, we sampled the data at a rate between every second to tenth image.  We also sampled randomly such that we had $^1/_2$ to $^1/_{10}$ of the original data.  For the random sample, we performed the sample ten times and averaged the result. We report the error of the Kalman center with the ground truth center.  This error is reported as an average error over all frames for the dataset and is shown in Figure \ref{fig:kalman_error}.
 
-We also evaluate the error of our whole system for estimating the corners of the fiducial marker.  We display results for unsampled data and evenly and randomly sampled data of $^1/_2, ^1/_5, ^1/_10$.  As above, the random sample is the average of ten.  The error reported is the average distance between the predicted corners and the April Tag corners. This error is shown in Figure~\ref{fig:error_plot}
+We also evaluate the error of our whole system for estimating the corners of the fiducial marker.  We display results for evenly and randomly sampled data of $^1/_2, ^1/_5, ^1/_10$.  As above, random sample error is an average of ten runs.  The error reported is the average distance between the predicted corners and the AprilTag corners. This error is shown in Figure~\ref{fig:error_plot}
 \begin{figure*}
 \centering
 \subfloat[General 1]{\includegraphics[width=.3\textwidth]{kalman_nov_1}}
